@@ -6,8 +6,6 @@ import BirdModal from '../components/BirdModal';
 import AddUpdateBirdModal from '../components/AddUpdateBirdModal';
 import * as Action from '../actions';
 
-import styles from '../css/dashboard.scss';
-
 class Dashboard extends Component {
   componentDidMount() {
     this.props.dispatch(Action.fetchBirds());

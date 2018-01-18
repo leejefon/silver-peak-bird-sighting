@@ -39,7 +39,7 @@ class AddUpdateBirdModal extends Component {
         onHide={() => this.close()}
       >
         <Modal.Header>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>{this.props.uiState.birdModalAction} Bird</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>One fine body...</Modal.Body>

@@ -1,16 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Button from 'react-bootstrap/lib/Button';
-import classnames from 'classnames';
+import Table from 'react-bootstrap/lib/Table';
 import * as Action from '../actions';
 
 class BirdsTable extends Component {
-  toggleBirdFormModal() {
-
+  toggleBirdFormModal(action, data) {
+    this.props.dispatch({
+      type: Action.TOGGLE_BIRD_FORM_MODAL,
+      data: {
+        show: !this.props.uiState.showBirdFormModal,
+        action,
+        data
+      }
+    });
   }
 
-  toggleBirdModal() {
-
+  toggleBirdModal(data) {
+    this.props.dispatch({
+      type: Action.TOGGLE_BIRD_MODAL,
+      data: {
+        show: !this.props.uiState.showBirdModal,
+        data
+      }
+    });
   }
 
   deleteBird() {
@@ -19,7 +32,7 @@ class BirdsTable extends Component {
 
   render() {
     return (
-      <table className={classnames('table', 'table-bordered')}>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>&nbsp;</th>
@@ -49,19 +62,20 @@ class BirdsTable extends Component {
               </td>
               <td>{bird.size}</td>
               <td>{bird.color}</td>
-              <td>{bird.weight}</td>
+              <td>{bird.weight} KG</td>
               <td>...</td>
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
     );
   }
 }
 
 function mapStateToProps(state) {
   return {
-    birds: state.get('data').get('birds').toJS()
+    birds: state.get('data').get('birds').toJS(),
+    uiState: state.get('uiReducer').toJS()
   };
 }
 
