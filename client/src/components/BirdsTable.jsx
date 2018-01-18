@@ -9,6 +9,10 @@ class BirdsTable extends Component {
 
   }
 
+  toggleBirdModal() {
+
+  }
+
   deleteBird() {
 
   }
@@ -38,7 +42,11 @@ class BirdsTable extends Component {
                   <i className="fa fa-times" />
                 </Button>
               </td>
-              <td>{bird.name}</td>
+              <td>
+                <Button bsStyle="link" onClick={() => this.toggleBirdModal(bird)}>
+                  {bird.name}
+                </Button>
+              </td>
               <td>{bird.size}</td>
               <td>{bird.color}</td>
               <td>{bird.weight}</td>

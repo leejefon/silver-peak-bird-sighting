@@ -9736,12 +9736,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.fetchBirds = fetchBirds;
 exports.fetchSightings = fetchSightings;
-exports.sightingActions = exports.birdActions = exports.SET_SIGHTINGS = exports.SET_BIRDS = void 0;
+exports.sightingActions = exports.birdActions = exports.SET_SIGHTINGS = exports.SET_BIRDS = exports.TOGGLE_BIRD_MODAL = exports.TOGGLE_BIRD_FORM_MODAL = void 0;
 
 var _feathers = _interopRequireDefault(__webpack_require__(138));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var TOGGLE_BIRD_FORM_MODAL = 'TOGGLE_BIRD_FORM_MODAL';
+exports.TOGGLE_BIRD_FORM_MODAL = TOGGLE_BIRD_FORM_MODAL;
+var TOGGLE_BIRD_MODAL = 'TOGGLE_BIRD_MODAL';
+exports.TOGGLE_BIRD_MODAL = TOGGLE_BIRD_MODAL;
 var SET_BIRDS = 'SET_BIRDS';
 exports.SET_BIRDS = SET_BIRDS;
 var SET_SIGHTINGS = 'SET_SIGHTINGS';
@@ -40915,13 +40919,31 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var initialState = _immutable.default.fromJS({});
+var initialState = _immutable.default.fromJS({
+  showBirdFormModal: false,
+  showBirdModal: false,
+  birdModalAction: '',
+  selectedBird: null
+});
 
 function uiReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
+    case Events.TOGGLE_BIRD_FORM_MODAL:
+      return state.merge({
+        showBirdFormModal: action.data.show,
+        birdModalAction: action.data.action,
+        selectedBird: action.data.data
+      });
+
+    case Events.TOGGLE_BIRD_MODAL:
+      return state.merge({
+        showBirdModal: action.data.show,
+        selectedBird: action.data.data
+      });
+
     default:
       return state;
   }
@@ -40946,13 +40968,13 @@ var _react = _interopRequireWildcard(__webpack_require__(4));
 
 var _reactRedux = __webpack_require__(51);
 
+var _Button = _interopRequireDefault(__webpack_require__(342));
+
 var _BirdsTable = _interopRequireDefault(__webpack_require__(246));
 
 var _BirdModal = _interopRequireDefault(__webpack_require__(279));
 
 var _AddUpdateBirdModal = _interopRequireDefault(__webpack_require__(340));
-
-var _AddUpdateSightingModal = _interopRequireDefault(__webpack_require__(341));
 
 var Action = _interopRequireWildcard(__webpack_require__(63));
 
@@ -40992,11 +41014,33 @@ function (_Component) {
       this.props.dispatch(Action.fetchSightings());
     }
   }, {
+    key: "toggleBirdAddModal",
+    value: function toggleBirdAddModal() {
+      this.props.dispatch({
+        type: Action.TOGGLE_BIRD_FORM_MODAL,
+        data: {
+          show: !this.props.uiState.showBirdFormModal,
+          action: Action.birdActions.ADD
+        }
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
+      var _this = this;
+
       return _react.default.createElement("div", {
         className: "container"
-      }, _react.default.createElement("h1", null, "Bird Sighting"), _react.default.createElement(_BirdsTable.default, null), _react.default.createElement(_BirdModal.default, null), _react.default.createElement(_AddUpdateBirdModal.default, null), _react.default.createElement(_AddUpdateSightingModal.default, null));
+      }, _react.default.createElement("h1", null, "Bird Sighting"), _react.default.createElement("div", {
+        className: "text-right"
+      }, _react.default.createElement(_Button.default, {
+        bsStyle: "link",
+        onClick: function onClick() {
+          return _this.toggleBirdAddModal();
+        }
+      }, _react.default.createElement("i", {
+        className: "fa fa-plus"
+      }), " Add Bird")), _react.default.createElement(_BirdsTable.default, null), _react.default.createElement(_BirdModal.default, null), _react.default.createElement(_AddUpdateBirdModal.default, null));
     }
   }]);
 
@@ -41004,7 +41048,9 @@ function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    uiState: state.get('uiReducer').toJS()
+  };
 }
 
 var _default = (0, _reactRedux.connect)(mapStateToProps)(Dashboard);
@@ -41658,6 +41704,9 @@ function (_Component) {
     key: "toggleBirdFormModal",
     value: function toggleBirdFormModal() {}
   }, {
+    key: "toggleBirdModal",
+    value: function toggleBirdModal() {}
+  }, {
     key: "deleteBird",
     value: function deleteBird() {}
   }, {
@@ -41684,7 +41733,12 @@ function (_Component) {
           }
         }, _react.default.createElement("i", {
           className: "fa fa-times"
-        }))), _react.default.createElement("td", null, bird.name), _react.default.createElement("td", null, bird.size), _react.default.createElement("td", null, bird.color), _react.default.createElement("td", null, bird.weight), _react.default.createElement("td", null, "..."));
+        }))), _react.default.createElement("td", null, _react.default.createElement(_Button.default, {
+          bsStyle: "link",
+          onClick: function onClick() {
+            return _this.toggleBirdModal(bird);
+          }
+        }, bird.name)), _react.default.createElement("td", null, bird.size), _react.default.createElement("td", null, bird.color), _react.default.createElement("td", null, bird.weight), _react.default.createElement("td", null, "..."));
       })));
     }
   }]);
@@ -46858,7 +46912,11 @@ var _react = _interopRequireWildcard(__webpack_require__(4));
 
 var _reactRedux = __webpack_require__(51);
 
+var _Button = _interopRequireDefault(__webpack_require__(342));
+
 var _Modal = _interopRequireDefault(__webpack_require__(258));
+
+var Action = _interopRequireWildcard(__webpack_require__(63));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -46881,16 +46939,47 @@ var AddUpdateBirdModal =
 function (_Component) {
   _inherits(AddUpdateBirdModal, _Component);
 
-  function AddUpdateBirdModal() {
+  function AddUpdateBirdModal(props) {
+    var _this;
+
     _classCallCheck(this, AddUpdateBirdModal);
 
-    return _possibleConstructorReturn(this, (AddUpdateBirdModal.__proto__ || Object.getPrototypeOf(AddUpdateBirdModal)).apply(this, arguments));
+    _this = _possibleConstructorReturn(this, (AddUpdateBirdModal.__proto__ || Object.getPrototypeOf(AddUpdateBirdModal)).call(this, props));
+    _this.emptyData = {};
+    _this.state = {
+      data: null
+    };
+    return _this;
   }
 
   _createClass(AddUpdateBirdModal, [{
+    key: "close",
+    value: function close() {
+      this.props.dispatch({
+        type: Action.TOGGLE_BIRD_FORM_MODAL,
+        data: {
+          show: false,
+          action: '',
+          data: null
+        }
+      });
+      this.setState({
+        data: Object.assign({}, this.emptyData)
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement(_Modal.default, null);
+      var _this2 = this;
+
+      return _react.default.createElement(_Modal.default, {
+        show: this.props.uiState.showBirdFormModal,
+        onHide: function onHide() {
+          return _this2.close();
+        }
+      }, _react.default.createElement(_Modal.default.Header, null, _react.default.createElement(_Modal.default.Title, null, "Modal title")), _react.default.createElement(_Modal.default.Body, null, "One fine body..."), _react.default.createElement(_Modal.default.Footer, null, _react.default.createElement(_Button.default, null, "Close"), _react.default.createElement(_Button.default, {
+        bsStyle: "primary"
+      }, "Save")));
     }
   }]);
 
@@ -46898,7 +46987,9 @@ function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    uiState: state.get('uiReducer').toJS()
+  };
 }
 
 var _default = (0, _reactRedux.connect)(mapStateToProps)(AddUpdateBirdModal);
@@ -46906,69 +46997,7 @@ var _default = (0, _reactRedux.connect)(mapStateToProps)(AddUpdateBirdModal);
 exports.default = _default;
 
 /***/ }),
-/* 341 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _react = _interopRequireWildcard(__webpack_require__(4));
-
-var _reactRedux = __webpack_require__(51);
-
-var _Modal = _interopRequireDefault(__webpack_require__(258));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var AddUpdateSightingModal =
-/*#__PURE__*/
-function (_Component) {
-  _inherits(AddUpdateSightingModal, _Component);
-
-  function AddUpdateSightingModal() {
-    _classCallCheck(this, AddUpdateSightingModal);
-
-    return _possibleConstructorReturn(this, (AddUpdateSightingModal.__proto__ || Object.getPrototypeOf(AddUpdateSightingModal)).apply(this, arguments));
-  }
-
-  _createClass(AddUpdateSightingModal, [{
-    key: "render",
-    value: function render() {
-      return _react.default.createElement(_Modal.default, null);
-    }
-  }]);
-
-  return AddUpdateSightingModal;
-}(_react.Component);
-
-function mapStateToProps(state) {
-  return {};
-}
-
-var _default = (0, _reactRedux.connect)(mapStateToProps)(AddUpdateSightingModal);
-
-exports.default = _default;
-
-/***/ }),
+/* 341 */,
 /* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
