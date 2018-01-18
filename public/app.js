@@ -9734,7 +9734,9 @@ module.exports = exports['default'];
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SET_SIGHTINGS = exports.SET_BIRDS = void 0;
+exports.fetchBirds = fetchBirds;
+exports.fetchSightings = fetchSightings;
+exports.sightingActions = exports.birdActions = exports.SET_SIGHTINGS = exports.SET_BIRDS = void 0;
 
 var _feathers = _interopRequireDefault(__webpack_require__(138));
 
@@ -9744,6 +9746,56 @@ var SET_BIRDS = 'SET_BIRDS';
 exports.SET_BIRDS = SET_BIRDS;
 var SET_SIGHTINGS = 'SET_SIGHTINGS';
 exports.SET_SIGHTINGS = SET_SIGHTINGS;
+var birdActions = {
+  ADD: 'Add',
+  UPDATE: 'Update'
+};
+exports.birdActions = birdActions;
+var sightingActions = {
+  ADD: 'Add',
+  UPDATE: 'Update'
+};
+exports.sightingActions = sightingActions;
+
+function fetchBirds() {
+  return function (dispatch) {
+    var Bird = _feathers.default.service('birds');
+
+    Bird.find({
+      query: {
+        $sort: {
+          createdAt: -1
+        },
+        $limit: 200
+      }
+    }).then(function (birds) {
+      dispatch({
+        type: SET_BIRDS,
+        data: birds.data
+      });
+    });
+  };
+}
+
+function fetchSightings() {
+  return function (dispatch) {
+    var Sighting = _feathers.default.service('sightings');
+
+    Sighting.find({
+      query: {
+        $sort: {
+          createdAt: -1
+        },
+        $limit: 200
+      }
+    }).then(function (sightings) {
+      dispatch({
+        type: SET_SIGHTINGS,
+        data: sightings.data
+      });
+    });
+  };
+}
 
 /***/ }),
 /* 64 */
@@ -31464,7 +31516,7 @@ var _UiReducer = _interopRequireDefault(__webpack_require__(239));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var _default = (0, _reduxImmutable.combineReducers)({
-  dataReducer: _DataReducer.default,
+  data: _DataReducer.default,
   uiReducer: _UiReducer.default
 });
 
@@ -31668,13 +31720,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var initialState = _immutable.default.fromJS({});
+var initialState = _immutable.default.fromJS({
+  birds: [],
+  sightings: []
+});
 
 function dataReducer() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments.length > 1 ? arguments[1] : undefined;
 
   switch (action.type) {
+    case Events.SET_BIRDS:
+      return state.merge({
+        birds: action.data
+      });
+
+    case Events.SET_SIGHTINGS:
+      return state.merge({
+        sightings: action.data
+      });
+
     default:
       return state;
   }
@@ -40889,6 +40954,8 @@ var _AddUpdateBirdModal = _interopRequireDefault(__webpack_require__(340));
 
 var _AddUpdateSightingModal = _interopRequireDefault(__webpack_require__(341));
 
+var Action = _interopRequireWildcard(__webpack_require__(63));
+
 var _dashboard = _interopRequireDefault(__webpack_require__(241));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -40919,6 +40986,12 @@ function (_Component) {
   }
 
   _createClass(Dashboard, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      this.props.dispatch(Action.fetchBirds());
+      this.props.dispatch(Action.fetchSightings());
+    }
+  }, {
     key: "render",
     value: function render() {
       return _react.default.createElement("div", {
@@ -40978,13 +41051,10 @@ exports = module.exports = __webpack_require__(243)(false);
 
 
 // module
-exports.push([module.i, "._39weCVIX9ihFLPXSh0x265 ._3MWM5PvtIIgKWBq5lxtIwL {\n  text-align: center;\n  border: none;\n  margin-top: 20px; }\n  ._39weCVIX9ihFLPXSh0x265 ._3MWM5PvtIIgKWBq5lxtIwL th {\n    border-top: 1px solid #DDD !important;\n    text-align: center; }\n    ._39weCVIX9ihFLPXSh0x265 ._3MWM5PvtIIgKWBq5lxtIwL th:first-of-type {\n      border: none !important; }\n  ._39weCVIX9ihFLPXSh0x265 ._3MWM5PvtIIgKWBq5lxtIwL td {\n    width: 12.5%; }\n", ""]);
+exports.push([module.i, "", ""]);
 
 // exports
-exports.locals = {
-	"dashboard": "_39weCVIX9ihFLPXSh0x265",
-	"classTable": "_3MWM5PvtIIgKWBq5lxtIwL"
-};
+
 
 /***/ }),
 /* 243 */
@@ -41551,7 +41621,11 @@ var _react = _interopRequireWildcard(__webpack_require__(4));
 
 var _reactRedux = __webpack_require__(51);
 
+var _Button = _interopRequireDefault(__webpack_require__(342));
+
 var _classnames = _interopRequireDefault(__webpack_require__(247));
+
+var Action = _interopRequireWildcard(__webpack_require__(63));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -41581,11 +41655,37 @@ function (_Component) {
   }
 
   _createClass(BirdsTable, [{
+    key: "toggleBirdFormModal",
+    value: function toggleBirdFormModal() {}
+  }, {
+    key: "deleteBird",
+    value: function deleteBird() {}
+  }, {
     key: "render",
     value: function render() {
+      var _this = this;
+
       return _react.default.createElement("table", {
         className: (0, _classnames.default)('table', 'table-bordered')
-      }, _react.default.createElement("thead", null, _react.default.createElement("tr", null, _react.default.createElement("th", null, "\xA0"), _react.default.createElement("th", null, "Name"), _react.default.createElement("th", null, "Size"), _react.default.createElement("th", null, "Color"), _react.default.createElement("th", null, "Weight"), _react.default.createElement("th", null, "Recent Sightings"))));
+      }, _react.default.createElement("thead", null, _react.default.createElement("tr", null, _react.default.createElement("th", null, "\xA0"), _react.default.createElement("th", null, "Name"), _react.default.createElement("th", null, "Size"), _react.default.createElement("th", null, "Color"), _react.default.createElement("th", null, "Weight"), _react.default.createElement("th", null, "Recent Sightings"))), _react.default.createElement("tbody", null, this.props.birds.map(function (bird) {
+        return _react.default.createElement("tr", {
+          key: bird.name
+        }, _react.default.createElement("td", null, _react.default.createElement(_Button.default, {
+          bsStyle: "link",
+          onClick: function onClick() {
+            return _this.toggleBirdFormModal(Action.birdActions.UPDATE, bird);
+          }
+        }, _react.default.createElement("i", {
+          className: "fa fa-edit"
+        })), _react.default.createElement(_Button.default, {
+          bsStyle: "link",
+          onClick: function onClick() {
+            return _this.deleteBird(bird.id);
+          }
+        }, _react.default.createElement("i", {
+          className: "fa fa-times"
+        }))), _react.default.createElement("td", null, bird.name), _react.default.createElement("td", null, bird.size), _react.default.createElement("td", null, bird.color), _react.default.createElement("td", null, bird.weight), _react.default.createElement("td", null, "..."));
+      })));
     }
   }]);
 
@@ -41593,7 +41693,9 @@ function (_Component) {
 }(_react.Component);
 
 function mapStateToProps(state) {
-  return {};
+  return {
+    birds: state.get('data').get('birds').toJS()
+  };
 }
 
 var _default = (0, _reactRedux.connect)(mapStateToProps)(BirdsTable);
@@ -46865,6 +46967,326 @@ function mapStateToProps(state) {
 var _default = (0, _reactRedux.connect)(mapStateToProps)(AddUpdateSightingModal);
 
 exports.default = _default;
+
+/***/ }),
+/* 342 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _values = __webpack_require__(343);
+
+var _values2 = _interopRequireDefault(_values);
+
+var _objectWithoutProperties2 = __webpack_require__(253);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _extends3 = __webpack_require__(251);
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _classCallCheck2 = __webpack_require__(248);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(249);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(250);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _classnames = __webpack_require__(247);
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(52);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _elementType = __webpack_require__(255);
+
+var _elementType2 = _interopRequireDefault(_elementType);
+
+var _bootstrapUtils = __webpack_require__(254);
+
+var _StyleConfig = __webpack_require__(265);
+
+var _SafeAnchor = __webpack_require__(346);
+
+var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  active: _propTypes2.default.bool,
+  disabled: _propTypes2.default.bool,
+  block: _propTypes2.default.bool,
+  onClick: _propTypes2.default.func,
+  componentClass: _elementType2.default,
+  href: _propTypes2.default.string,
+  /**
+   * Defines HTML button type attribute
+   * @defaultValue 'button'
+   */
+  type: _propTypes2.default.oneOf(['button', 'reset', 'submit'])
+};
+
+var defaultProps = {
+  active: false,
+  block: false,
+  disabled: false
+};
+
+var Button = function (_React$Component) {
+  (0, _inherits3.default)(Button, _React$Component);
+
+  function Button() {
+    (0, _classCallCheck3.default)(this, Button);
+    return (0, _possibleConstructorReturn3.default)(this, _React$Component.apply(this, arguments));
+  }
+
+  Button.prototype.renderAnchor = function renderAnchor(elementProps, className) {
+    return _react2.default.createElement(_SafeAnchor2.default, (0, _extends4.default)({}, elementProps, {
+      className: (0, _classnames2.default)(className, elementProps.disabled && 'disabled')
+    }));
+  };
+
+  Button.prototype.renderButton = function renderButton(_ref, className) {
+    var componentClass = _ref.componentClass,
+        elementProps = (0, _objectWithoutProperties3.default)(_ref, ['componentClass']);
+
+    var Component = componentClass || 'button';
+
+    return _react2.default.createElement(Component, (0, _extends4.default)({}, elementProps, {
+      type: elementProps.type || 'button',
+      className: className
+    }));
+  };
+
+  Button.prototype.render = function render() {
+    var _extends2;
+
+    var _props = this.props,
+        active = _props.active,
+        block = _props.block,
+        className = _props.className,
+        props = (0, _objectWithoutProperties3.default)(_props, ['active', 'block', 'className']);
+
+    var _splitBsProps = (0, _bootstrapUtils.splitBsProps)(props),
+        bsProps = _splitBsProps[0],
+        elementProps = _splitBsProps[1];
+
+    var classes = (0, _extends4.default)({}, (0, _bootstrapUtils.getClassSet)(bsProps), (_extends2 = {
+      active: active
+    }, _extends2[(0, _bootstrapUtils.prefix)(bsProps, 'block')] = block, _extends2));
+    var fullClassName = (0, _classnames2.default)(className, classes);
+
+    if (elementProps.href) {
+      return this.renderAnchor(elementProps, fullClassName);
+    }
+
+    return this.renderButton(elementProps, fullClassName);
+  };
+
+  return Button;
+}(_react2.default.Component);
+
+Button.propTypes = propTypes;
+Button.defaultProps = defaultProps;
+
+exports.default = (0, _bootstrapUtils.bsClass)('btn', (0, _bootstrapUtils.bsSizes)([_StyleConfig.Size.LARGE, _StyleConfig.Size.SMALL, _StyleConfig.Size.XSMALL], (0, _bootstrapUtils.bsStyles)([].concat((0, _values2.default)(_StyleConfig.State), [_StyleConfig.Style.DEFAULT, _StyleConfig.Style.PRIMARY, _StyleConfig.Style.LINK]), _StyleConfig.Style.DEFAULT, Button)));
+module.exports = exports['default'];
+
+/***/ }),
+/* 343 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = { "default": __webpack_require__(344), __esModule: true };
+
+/***/ }),
+/* 344 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(345);
+module.exports = __webpack_require__(6).Object.values;
+
+
+/***/ }),
+/* 345 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// https://github.com/tc39/proposal-object-values-entries
+var $export = __webpack_require__(21);
+var $values = __webpack_require__(333)(false);
+
+$export($export.S, 'Object', {
+  values: function values(it) {
+    return $values(it);
+  }
+});
+
+
+/***/ }),
+/* 346 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+
+var _extends2 = __webpack_require__(251);
+
+var _extends3 = _interopRequireDefault(_extends2);
+
+var _objectWithoutProperties2 = __webpack_require__(253);
+
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _classCallCheck2 = __webpack_require__(248);
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _possibleConstructorReturn2 = __webpack_require__(249);
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = __webpack_require__(250);
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = __webpack_require__(52);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _elementType = __webpack_require__(255);
+
+var _elementType2 = _interopRequireDefault(_elementType);
+
+var _createChainedFunction = __webpack_require__(278);
+
+var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var propTypes = {
+  href: _propTypes2.default.string,
+  onClick: _propTypes2.default.func,
+  onKeyDown: _propTypes2.default.func,
+  disabled: _propTypes2.default.bool,
+  role: _propTypes2.default.string,
+  tabIndex: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
+  /**
+   * this is sort of silly but needed for Button
+   */
+  componentClass: _elementType2.default
+};
+
+var defaultProps = {
+  componentClass: 'a'
+};
+
+function isTrivialHref(href) {
+  return !href || href.trim() === '#';
+}
+
+/**
+ * There are situations due to browser quirks or Bootstrap CSS where
+ * an anchor tag is needed, when semantically a button tag is the
+ * better choice. SafeAnchor ensures that when an anchor is used like a
+ * button its accessible. It also emulates input `disabled` behavior for
+ * links, which is usually desirable for Buttons, NavItems, MenuItems, etc.
+ */
+
+var SafeAnchor = function (_React$Component) {
+  (0, _inherits3.default)(SafeAnchor, _React$Component);
+
+  function SafeAnchor(props, context) {
+    (0, _classCallCheck3.default)(this, SafeAnchor);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, _React$Component.call(this, props, context));
+
+    _this.handleClick = _this.handleClick.bind(_this);
+    _this.handleKeyDown = _this.handleKeyDown.bind(_this);
+    return _this;
+  }
+
+  SafeAnchor.prototype.handleClick = function handleClick(event) {
+    var _props = this.props,
+        disabled = _props.disabled,
+        href = _props.href,
+        onClick = _props.onClick;
+
+
+    if (disabled || isTrivialHref(href)) {
+      event.preventDefault();
+    }
+
+    if (disabled) {
+      event.stopPropagation();
+      return;
+    }
+
+    if (onClick) {
+      onClick(event);
+    }
+  };
+
+  SafeAnchor.prototype.handleKeyDown = function handleKeyDown(event) {
+    if (event.key === ' ') {
+      event.preventDefault();
+      this.handleClick(event);
+    }
+  };
+
+  SafeAnchor.prototype.render = function render() {
+    var _props2 = this.props,
+        Component = _props2.componentClass,
+        disabled = _props2.disabled,
+        onKeyDown = _props2.onKeyDown,
+        props = (0, _objectWithoutProperties3.default)(_props2, ['componentClass', 'disabled', 'onKeyDown']);
+
+
+    if (isTrivialHref(props.href)) {
+      props.role = props.role || 'button';
+      // we want to make sure there is a href attribute on the node
+      // otherwise, the cursor incorrectly styled (except with role='button')
+      props.href = props.href || '#';
+    }
+
+    if (disabled) {
+      props.tabIndex = -1;
+      props.style = (0, _extends3.default)({ pointerEvents: 'none' }, props.style);
+    }
+
+    return _react2.default.createElement(Component, (0, _extends3.default)({}, props, {
+      onClick: this.handleClick,
+      onKeyDown: (0, _createChainedFunction2.default)(this.handleKeyDown, onKeyDown)
+    }));
+  };
+
+  return SafeAnchor;
+}(_react2.default.Component);
+
+SafeAnchor.propTypes = propTypes;
+SafeAnchor.defaultProps = defaultProps;
+
+exports.default = SafeAnchor;
+module.exports = exports['default'];
 
 /***/ })
 /******/ ]);

@@ -1,8 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import Button from 'react-bootstrap/lib/Button';
 import classnames from 'classnames';
+import * as Action from '../actions';
 
 class BirdsTable extends Component {
+  toggleBirdFormModal() {
+
+  }
+
+  deleteBird() {
+
+  }
+
   render() {
     return (
       <table className={classnames('table', 'table-bordered')}>
@@ -16,6 +26,26 @@ class BirdsTable extends Component {
             <th>Recent Sightings</th>
           </tr>
         </thead>
+
+        <tbody>
+          {this.props.birds.map(bird => (
+            <tr key={bird.name}>
+              <td>
+                <Button bsStyle="link" onClick={() => this.toggleBirdFormModal(Action.birdActions.UPDATE, bird)}>
+                  <i className="fa fa-edit" />
+                </Button>
+                <Button bsStyle="link" onClick={() => this.deleteBird(bird.id)}>
+                  <i className="fa fa-times" />
+                </Button>
+              </td>
+              <td>{bird.name}</td>
+              <td>{bird.size}</td>
+              <td>{bird.color}</td>
+              <td>{bird.weight}</td>
+              <td>...</td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     );
   }
@@ -23,7 +53,7 @@ class BirdsTable extends Component {
 
 function mapStateToProps(state) {
   return {
-
+    birds: state.get('data').get('birds').toJS()
   };
 }
 

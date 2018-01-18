@@ -7,7 +7,7 @@ module.exports = function(app) {
       type: Sequelize.STRING
     },
     size: {
-      type: Sequelize.INTEGER
+      type: Sequelize.STRING
     },
     color: {
       type: Sequelize.STRING
