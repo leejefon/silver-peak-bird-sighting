@@ -1,0 +1,41 @@
+{
+  "name": "silver-peak-bird-sighting",
+  "author": "Jeff Lee <leejefon@gmail.com>",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "8.x"
+  },
+  "dependencies": {
+    "@feathersjs/authentication": "^2.1.0",
+    "@feathersjs/authentication-jwt": "^1.0.1",
+    "@feathersjs/authentication-local": "^1.0.2",
+    "@feathersjs/configuration": "^1.0.1",
+    "@feathersjs/errors": "^3.2.0",
+    "@feathersjs/express": "^1.1.2",
+    "@feathersjs/feathers": "^3.0.2",
+    "@feathersjs/socketio": "^3.0.1",
+    "compression": "^1.6.2",
+    "cors": "^2.8.1",
+    "crypto": "^1.0.1",
+    "dotenv": "^4.0.0",
+    "feathers-sequelize": "^3.0.0",
+    "helmet": "^3.5.0",
+    "mysql2": "^1.4.2",
+    "sequelize": "^4.7.2",
+    "serve-favicon": "^2.4.1",
+    "winston": "^2.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "mocha": "^4.0.1",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  },
+  "scripts": {
+    "start": "node src",
+    "lint": "eslint src test",
+    "mocha": "mocha test --recursive --exit",
+    "test": "npm run lint && npm run mocha"
+  }
+}
