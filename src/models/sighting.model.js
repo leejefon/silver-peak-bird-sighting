@@ -3,16 +3,15 @@ const Bird = require('./bird.model');
 
 module.exports = function(app) {
   const sequelize = app.get('sequelize');
-  const sightings = sequelize.define('sightlings', {
+  const sightings = sequelize.define('sightings', {
     bird_id: {
-      primaryKey: true,
       type: Sequelize.INTEGER,
       reference: {
         model: Bird,
         key: 'id',
       }
     },
-    time: {
+    datetime: {
       type: Sequelize.DATE
     },
     location: {

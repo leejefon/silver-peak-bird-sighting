@@ -6,6 +6,8 @@ import BirdModal from '../components/BirdModal';
 import AddUpdateBirdModal from '../components/AddUpdateBirdModal';
 import * as Action from '../actions';
 
+import '../css/custom.scss';
+
 class Dashboard extends Component {
   componentDidMount() {
     this.props.dispatch(Action.fetchBirds());
@@ -32,6 +34,8 @@ class Dashboard extends Component {
             <i className="fa fa-plus" /> Add Bird
           </Button>
         </div>
+
+        <br />
 
         <BirdsTable />
         <BirdModal />

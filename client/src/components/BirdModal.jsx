@@ -3,14 +3,15 @@ import { connect } from 'react-redux';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 import Button from 'react-bootstrap/lib/Button';
-import Form from 'react-bootstrap/lib/Form';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
 import DateTime from 'react-datetime';
+import moment from 'moment';
 import * as Action from '../actions';
+import client from '../utils/feathers';
 
 import '../css/react-datetime.scss';
 
@@ -21,23 +22,53 @@ class BirdModal extends Component {
     this.state = {
       sightings: [],
       newSighting: {
-        datetime: new Date(),
+        datetime: moment(),
         location: ''
       },
       showSightingForm: false
     };
   }
 
-  toggleAddSightingForm() {
+  componentWillReceiveProps(props) {
     this.setState({
-      showSightingForm: !this.state.showSightingForm
+      sightings: props.sightings
     });
   }
 
-  updateData(name, value) {
+  toggleAddSightingForm() {
+    this.setState({
+      showSightingForm: !this.state.showSightingForm,
+      newSighting: {
+        datetime: moment(),
+        location: ''
+      }
+    });
+  }
+
+  updateField(name, value) {
     const newSighting = Object.assign({}, this.state.newSighting);
     newSighting[name] = value;
     this.setState({ newSighting });
+  }
+
+  addSighting() {
+    const obj = Object.assign({}, this.state.newSighting, {
+      bird_id: this.props.uiState.selectedBird.id,
+      datetime: this.state.newSighting.datetime.format('YYYY-MM-DD hh:mm:ss')
+    });
+
+    const Sighting = client.service('sightings');
+    Sighting.create(obj).then(() => {
+      this.props.dispatch(Action.fetchSightings());
+      this.toggleAddSightingForm();
+    });
+  }
+
+  deleteSighting(id) {
+    const Sighting = client.service('sightings');
+    Sighting.remove(id).then(() => {
+      this.props.dispatch(Action.fetchSightings());
+    });
   }
 
   close() {
@@ -61,7 +92,7 @@ class BirdModal extends Component {
             <FormControl
               value={this.state.newSighting.location}
               placeholder="Location of Sighting"
-              onChange={e => this.updateData('location', e.target.value)}
+              onChange={e => this.updateField('location', e.target.value)}
             />
           </FormGroup>
         </Col>
@@ -71,9 +102,19 @@ class BirdModal extends Component {
             <ControlLabel>Date/Time</ControlLabel>
             <DateTime
               value={this.state.newSighting.datetime}
-              onChange={e => this.updateData('datetime', e.target.value)}
+              onChange={v => this.updateField('datetime', v)}
             />
           </FormGroup>
+        </Col>
+
+        <Col sm={12}>
+          <Button
+            bsStyle="primary"
+            onClick={() => this.addSighting()}
+            style={{ float: 'right' }}
+          >
+            Add
+          </Button>
         </Col>
       </Row>
     );
@@ -104,19 +145,48 @@ class BirdModal extends Component {
               </tr>
               <tr>
                 <th>Weight</th>
-                <td>{bird.weight}</td>
+                <td>{bird.weight} kg</td>
               </tr>
             </tbody>
           </Table>
 
           <hr />
 
-          <Button bsStyle="link" onClick={() => this.toggleAddSightingForm()}>
-            <i className={`fa fa-${this.state.showSightingForm ? 'minus' : 'plus'}`} />&nbsp;&nbsp;
-            {this.state.showSightingForm ? 'Cancel' : 'Add Sighting'}
-          </Button>
+          <h4>Recent Sightings</h4>
+
+          <div className="text-right">
+            <Button bsStyle="link" onClick={() => this.toggleAddSightingForm()}>
+              <i className={`fa fa-${this.state.showSightingForm ? 'minus' : 'plus'}`} />&nbsp;&nbsp;
+              {this.state.showSightingForm ? 'Cancel' : 'Add Sighting'}
+            </Button>
+          </div>
 
           {this.state.showSightingForm ? newSightingForm : null}
+
+          <br />
+
+          <Table bordered striped hover>
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th>Date/Time</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.sightings.filter(s => s.bird_id === bird.id).map(sighting => (
+                <tr key={sighting.id}>
+                  <td>
+                    <Button bsStyle="link" onClick={() => this.deleteSighting(sighting.id)}>
+                      <i className="fa fa-times" />
+                    </Button>
+                  </td>
+                  <td>{moment(sighting.datetime).format('YYYY-MM-DD hh:mm:ss')}</td>
+                  <td>{sighting.location}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         </Modal.Body>
       </Modal>
     );
@@ -125,6 +195,7 @@ class BirdModal extends Component {
 
 function mapStateToProps(state) {
   return {
+    sightings: state.get('data').get('sightings').toJS(),
     uiState: state.get('uiReducer').toJS()
   };
 }
