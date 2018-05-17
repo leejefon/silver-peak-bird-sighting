@@ -27,7 +27,7 @@ export function fetchBirds() {
     }).then((birds) => {
       dispatch({
         type: SET_BIRDS,
-        data: birds.data
+        data: birds
       });
     });
   };
@@ -44,7 +44,7 @@ export function fetchSightings() {
     }).then((sightings) => {
       dispatch({
         type: SET_SIGHTINGS,
-        data: sightings.data
+        data: sightings
       });
     });
   };

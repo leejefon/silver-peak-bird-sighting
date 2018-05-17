@@ -11,11 +11,7 @@ const configuration = require('@feathersjs/configuration');
 const rest = require('@feathersjs/express/rest');
 const socketio = require('@feathersjs/socketio');
 
-const middleware = require('./middleware');
 const services = require('./services');
-const appHooks = require('./app.hooks');
-const channels = require('./channels');
-const authentication = require('./authentication');
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
@@ -40,14 +36,8 @@ app.use('/', express.static(app.get('public')));
 app.configure(rest());
 app.configure(socketio());
 
-app.configure(middleware);
-app.configure(authentication);
 app.configure(services);
-app.configure(channels);
 
-app.use(express.notFound());
 app.use(express.errorHandler({ logger }));
-
-app.hooks(appHooks);
 
 module.exports = app;

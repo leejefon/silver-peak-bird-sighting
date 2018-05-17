@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize');
 
-const users = require('./users/users.service.js');
 const birds = require('./birds/birds.service.js');
 const sightings = require('./sightings/sightings.service.js');
 
@@ -13,7 +12,6 @@ module.exports = function() {
   });
   app.set('sequelize', sequelize);
 
-  app.configure(users);
   app.configure(birds);
   app.configure(sightings);
 

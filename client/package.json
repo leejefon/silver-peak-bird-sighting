@@ -9,7 +9,6 @@
   "dependencies": {
     "classnames": "^2.2.5",
     "feathers": "^2.1.1",
-    "feathers-authentication-client": "^0.3.3",
     "feathers-hooks": "^2.0.0",
     "feathers-socketio": "^2.0.0",
     "immutable": "^3.8.2",
