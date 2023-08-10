@@ -11,7 +11,7 @@
 
 To run the server:
 - `echo 'DATABASE_URL=mysql://{user}:{pass}@localhost:3306/{database}' > .env`
-- `yarn` or `npm install`
+- `npm install`
 - `npm start`
 
 To compile client:
